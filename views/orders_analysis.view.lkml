@@ -1,6 +1,5 @@
 view: orders_analysis {
-  sql_table_name: `superstore.orders_analysis`
-    ;;
+  sql_table_name: `superstore.orders_analysis` ;;
 
   dimension: category {
     type: string

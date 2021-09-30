@@ -11,4 +11,8 @@ datagroup: superstore_alex_mendoza_row_access_example_default_datagroup {
 persist_with: superstore_alex_mendoza_row_access_example_default_datagroup
 
 explore: orders_analysis {
+  access_filter: {
+    field: email
+    user_attribute: email
+  }
 }
