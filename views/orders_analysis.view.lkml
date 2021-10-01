@@ -46,7 +46,8 @@ view: orders_analysis {
       quarter,
       year,
       day_of_month,
-      day_of_year
+      day_of_year,
+      month_name
     ]
     convert_tz: no
     datatype: date
@@ -55,7 +56,7 @@ view: orders_analysis {
 
   dimension_group: hidden_today {
     type: time
-    timeframes: [day_of_month]
+    timeframes: [day_of_month, day_of_year]
     hidden: yes
     sql: DATE(current_timestamp(), "America/New_York") ;;
   }
@@ -67,7 +68,7 @@ view: orders_analysis {
 
   dimension: is_before_day_of_year {
     type: yesno
-    sql: ${order_day_of_year} <= ${hidden_today_day_of_month} ;;
+    sql: ${order_day_of_year} <= ${hidden_today_day_of_year} ;;
   }
 
   dimension: months_ago {
@@ -97,6 +98,26 @@ view: orders_analysis {
   measure: month_over_month_sales_pdiff {
     type: number
     sql: (${month_to_date_sales} - ${prior_month_to_date_sales}) / NULLIF(${prior_month_to_date_sales}, 0) ;;
+    value_format_name: percent_1
+  }
+
+  measure: year_to_date_sales {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_ago: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: prior_year_to_date_sales {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_ago: "1", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_sales_pdiff {
+    type: number
+    sql: (${year_to_date_sales} - ${prior_year_to_date_sales}) / NULLIF(${prior_year_to_date_sales}, 0) ;;
     value_format_name: percent_1
   }
 
