@@ -101,6 +101,12 @@ view: orders_analysis {
     value_format_name: percent_1
   }
 
+  measure: month_over_month_sales_diff {
+    type: number
+    sql: (${month_to_date_sales} - ${prior_month_to_date_sales}) ;;
+    value_format_name: usd_0
+  }
+
   measure: year_to_date_sales {
     type: sum
     sql: ${sales} ;;
@@ -119,6 +125,88 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_sales} - ${prior_year_to_date_sales}) / NULLIF(${prior_year_to_date_sales}, 0) ;;
     value_format_name: percent_1
+  }
+
+  measure: year_over_year_sales_diff {
+    type: number
+    sql: (${year_to_date_sales} - ${prior_year_to_date_sales})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: month_to_date_plan {
+    type: sum
+    sql: ${sales} * 1.1 ;;
+    filters: [months_ago: "0", is_before_day_of_month: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: year_to_date_plan {
+    type: sum
+    sql: ${sales} * 1.1 ;;
+    filters: [years_ago: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: month_to_date_sales_vs_plan {
+    type: number
+    sql: (${month_to_date_sales} - ${month_to_date_plan}) /  NULLIF(${month_to_date_plan}, 0) ;;
+    value_format_name: percent_0
+  }
+
+  measure: month_to_date_sales_vs_plan_diff {
+    type: number
+    sql: (${month_to_date_sales} - ${month_to_date_plan})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: year_to_date_sales_vs_plan {
+    type: number
+    sql: (${year_to_date_sales} - ${year_to_date_plan}) /  NULLIF(${year_to_date_plan}, 0) ;;
+    value_format_name: percent_0
+  }
+
+  measure: year_to_date_sales_vs_plan_diff {
+    type: number
+    sql: (${year_to_date_sales} - ${year_to_date_plan})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: month_to_date_forecast {
+    type: sum
+    sql: ${sales} * .98 ;;
+    filters: [months_ago: "0", is_before_day_of_month: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: month_to_date_sales_vs_forecast {
+    type: number
+    sql: (${month_to_date_sales} - ${month_to_date_forecast}) /  NULLIF(${month_to_date_forecast}, 0) ;;
+    value_format_name: percent_0
+  }
+
+  measure: month_to_date_sales_vs_forecast_diff {
+    type: number
+    sql: (${month_to_date_sales} - ${month_to_date_forecast})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: year_to_date_forecast {
+    type: sum
+    sql: ${sales} * .98 ;;
+    filters: [years_ago: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: year_to_date_sales_vs_forecast {
+    type: number
+    sql: (${year_to_date_sales} - ${year_to_date_forecast}) /  NULLIF(${year_to_date_forecast}, 0) ;;
+    value_format_name: percent_0
+  }
+
+  measure: year_to_date_sales_vs_forecast_diff {
+    type: number
+    sql: (${year_to_date_sales} - ${year_to_date_forecast})  ;;
+    value_format_name: usd_0
   }
 
 
