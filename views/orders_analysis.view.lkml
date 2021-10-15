@@ -71,14 +71,21 @@ view: orders_analysis {
     sql: ${order_day_of_year} <= ${hidden_today_day_of_year} ;;
   }
 
-  dimension: months_ago {
-    type: number
-    sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), MONTH) ;;
-  }
+  # dimension: months_ago {
+  #   type: number
+  #   sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), MONTH) ;;
+  # }
 
-  dimension: years_ago {
-    type: number
-    sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), YEAR) ;;
+  # dimension: years_ago {
+  #   type: number
+  #   sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), YEAR) ;;
+  # }
+
+  dimension_group: ago {
+    type: duration
+    intervals: [month, week, day, year]
+    sql_start: ${order_date} ;;
+    sql_end: DATE(current_timestamp(), "America/New_York") ;;
   }
 
   measure: month_to_date_sales {
