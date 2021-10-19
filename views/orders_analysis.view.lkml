@@ -1,5 +1,10 @@
 view: orders_analysis {
   sql_table_name: `superstore.orders_analysis` ;;
+  drill_fields: [customer_name, total_sales]
+
+  set: user_details {
+    fields: [customer_name, state, total_sales]
+  }
 
   dimension: category {
     type: string
@@ -256,6 +261,7 @@ view: orders_analysis {
   dimension: region {
     type: string
     sql: ${TABLE}.Region ;;
+    drill_fields: [state, city]
   }
 
   dimension: returned {
@@ -277,6 +283,7 @@ view: orders_analysis {
     type: sum
     sql: ${sales} ;;
     value_format_name: usd_0
+    drill_fields: [user_details*]
   }
 
   measure: total_sales_2 {
