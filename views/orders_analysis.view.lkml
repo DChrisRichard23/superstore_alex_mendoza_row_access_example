@@ -52,6 +52,7 @@ view: orders_analysis {
       year,
       day_of_month,
       day_of_year,
+      week_of_year,
       month_name
     ]
     convert_tz: no
@@ -86,7 +87,7 @@ view: orders_analysis {
   #   sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), YEAR) ;;
   # }
 
-  dimension_group: ago {
+  dimension_group: since_order {
     type: duration
     intervals: [month, week, day, year]
     sql_start: ${order_date} ;;
@@ -96,14 +97,14 @@ view: orders_analysis {
   measure: month_to_date_sales {
     type: sum
     sql: ${sales} ;;
-    filters: [months_ago: "0", is_before_day_of_month: "Yes"]
+    filters: [months_since_order: "0", is_before_day_of_month: "Yes"]
     value_format_name: usd_0
   }
 
   measure: prior_month_to_date_sales {
     type: sum
     sql: ${sales} ;;
-    filters: [months_ago: "1", is_before_day_of_month: "Yes"]
+    filters: [months_since_order: "1", is_before_day_of_month: "Yes"]
     value_format_name: usd_0
   }
 
@@ -122,14 +123,33 @@ view: orders_analysis {
   measure: year_to_date_sales {
     type: sum
     sql: ${sales} ;;
-    filters: [years_ago: "0", is_before_day_of_year: "Yes"]
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  dimension: complete_week_flag {
+    type: yesno
+    sql: ${weeks_since_order} > 0 ;;
+  }
+
+  measure: year_to_date_sales_complete_weeks {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes", complete_week_flag: "Yes"]
     value_format_name: usd_0
   }
 
   measure: prior_year_to_date_sales {
     type: sum
     sql: ${sales} ;;
-    filters: [years_ago: "1", is_before_day_of_year: "Yes"]
+    filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: prior_year_sales {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_since_order: "1"]
     value_format_name: usd_0
   }
 
@@ -148,14 +168,14 @@ view: orders_analysis {
   measure: month_to_date_plan {
     type: sum
     sql: ${sales} * 1.1 ;;
-    filters: [months_ago: "0", is_before_day_of_month: "Yes"]
+    filters: [months_since_order: "0", is_before_day_of_month: "Yes"]
     value_format_name: usd_0
   }
 
   measure: year_to_date_plan {
     type: sum
     sql: ${sales} * 1.1 ;;
-    filters: [years_ago: "0", is_before_day_of_year: "Yes"]
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
   }
 
@@ -186,7 +206,7 @@ view: orders_analysis {
   measure: month_to_date_forecast {
     type: sum
     sql: ${sales} * .98 ;;
-    filters: [months_ago: "0", is_before_day_of_month: "Yes"]
+    filters: [months_since_order: "0", is_before_day_of_month: "Yes"]
     value_format_name: usd_0
   }
 
@@ -205,7 +225,7 @@ view: orders_analysis {
   measure: year_to_date_forecast {
     type: sum
     sql: ${sales} * .98 ;;
-    filters: [years_ago: "0", is_before_day_of_year: "Yes"]
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
   }
 
