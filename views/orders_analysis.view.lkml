@@ -41,6 +41,7 @@ view: orders_analysis {
     sql: ${TABLE}.email ;;
   }
 
+# For Claims Demo 20211104
   dimension_group: order {
     type: time
     timeframes: [
@@ -60,39 +61,78 @@ view: orders_analysis {
     sql: ${TABLE}.Order_Date ;;
   }
 
-  dimension_group: hidden_today {
-    type: time
-    timeframes: [day_of_month, day_of_year]
-    hidden: yes
-    sql: DATE(current_timestamp(), "America/New_York") ;;
-  }
-
-  dimension: is_before_day_of_month {
-    type: yesno
-    sql: ${order_day_of_month} <= ${hidden_today_day_of_month} ;;
-  }
-
-  dimension: is_before_day_of_year {
-    type: yesno
-    sql: ${order_day_of_year} <= ${hidden_today_day_of_year} ;;
-  }
-
-  # dimension: months_ago {
-  #   type: number
-  #   sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), MONTH) ;;
-  # }
-
-  # dimension: years_ago {
-  #   type: number
-  #   sql: DATE_DIFF(DATE(current_timestamp(), "America/New_York") , CAST(${order_date} AS DATE), YEAR) ;;
-  # }
-
   dimension_group: since_order {
     type: duration
     intervals: [month, week, day, year]
     sql_start: ${order_date} ;;
     sql_end: DATE(current_timestamp(), "America/New_York") ;;
   }
+
+  dimension_group: hidden_today {
+    type: time
+    timeframes: [day_of_month, day_of_year, week_of_year]
+    hidden: yes
+    sql: DATE(current_timestamp(), "America/New_York") ;;
+  }
+
+  dimension: complete_week_flag {
+    type: yesno
+    sql: ${weeks_since_order} > 0 OR ${order_week_of_year} < ${hidden_today_week_of_year};;
+  }
+
+
+  dimension: is_before_day_of_year {
+    type: yesno
+    sql: ${order_day_of_year} <= ${hidden_today_day_of_year} ;;
+  }
+
+  measure: year_to_date_sales {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: prior_year_to_date_sales {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_sales_diff {
+    type: number
+    sql: (${year_to_date_sales} - ${prior_year_to_date_sales})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_sales_pdiff {
+    type: number
+    sql: (${year_to_date_sales} - ${prior_year_to_date_sales}) / NULLIF(${prior_year_to_date_sales}, 0) ;;
+    value_format_name: percent_1
+  }
+
+  measure: year_to_date_sales_complete_weeks {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes", complete_week_flag: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: prior_year_sales {
+    type: sum
+    sql: ${sales} ;;
+    filters: [years_since_order: "1"]
+    value_format_name: usd_0
+  }
+# For Claims Demo 20211104
+
+
+  dimension: is_before_day_of_month {
+    type: yesno
+    sql: ${order_day_of_month} <= ${hidden_today_day_of_month} ;;
+  }
+
 
   measure: month_to_date_sales {
     type: sum
@@ -117,51 +157,6 @@ view: orders_analysis {
   measure: month_over_month_sales_diff {
     type: number
     sql: (${month_to_date_sales} - ${prior_month_to_date_sales}) ;;
-    value_format_name: usd_0
-  }
-
-  measure: year_to_date_sales {
-    type: sum
-    sql: ${sales} ;;
-    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
-    value_format_name: usd_0
-  }
-
-  dimension: complete_week_flag {
-    type: yesno
-    sql: ${weeks_since_order} > 0 ;;
-  }
-
-  measure: year_to_date_sales_complete_weeks {
-    type: sum
-    sql: ${sales} ;;
-    filters: [years_since_order: "0", is_before_day_of_year: "Yes", complete_week_flag: "Yes"]
-    value_format_name: usd_0
-  }
-
-  measure: prior_year_to_date_sales {
-    type: sum
-    sql: ${sales} ;;
-    filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
-    value_format_name: usd_0
-  }
-
-  measure: prior_year_sales {
-    type: sum
-    sql: ${sales} ;;
-    filters: [years_since_order: "1"]
-    value_format_name: usd_0
-  }
-
-  measure: year_over_year_sales_pdiff {
-    type: number
-    sql: (${year_to_date_sales} - ${prior_year_to_date_sales}) / NULLIF(${prior_year_to_date_sales}, 0) ;;
-    value_format_name: percent_1
-  }
-
-  measure: year_over_year_sales_diff {
-    type: number
-    sql: (${year_to_date_sales} - ${prior_year_to_date_sales})  ;;
     value_format_name: usd_0
   }
 
@@ -282,6 +277,7 @@ view: orders_analysis {
     type: string
     sql: ${TABLE}.Region ;;
     drill_fields: [state, city]
+    html: <a href="/dashboards-next/207?Region={{ value }}">{{ value }}</a> ;;
   }
 
   dimension: returned {
