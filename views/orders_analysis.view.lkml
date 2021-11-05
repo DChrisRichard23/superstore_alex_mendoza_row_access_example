@@ -87,13 +87,16 @@ view: orders_analysis {
   }
 
   measure: year_to_date_sales {
+    view_label: "Year over Year Sales"
     type: sum
     sql: ${sales} ;;
     filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
+    drill_fields: [state, year_to_date_sales]
   }
 
   measure: prior_year_to_date_sales {
+    view_label: "Year over Year Sales"
     type: sum
     sql: ${sales} ;;
     filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
@@ -101,18 +104,21 @@ view: orders_analysis {
   }
 
   measure: year_over_year_sales_diff {
+    view_label: "Year over Year Sales"
     type: number
     sql: (${year_to_date_sales} - ${prior_year_to_date_sales})  ;;
     value_format_name: usd_0
   }
 
   measure: year_over_year_sales_pdiff {
+    view_label: "Year over Year Sales"
     type: number
     sql: (${year_to_date_sales} - ${prior_year_to_date_sales}) / NULLIF(${prior_year_to_date_sales}, 0) ;;
     value_format_name: percent_1
   }
 
   measure: year_to_date_sales_complete_weeks {
+    view_label: "Year over Year Sales"
     type: sum
     sql: ${sales} ;;
     filters: [years_since_order: "0", is_before_day_of_year: "Yes", complete_week_flag: "Yes"]
@@ -120,6 +126,7 @@ view: orders_analysis {
   }
 
   measure: prior_year_sales {
+    view_label: "Year over Year Sales"
     type: sum
     sql: ${sales} ;;
     filters: [years_since_order: "1"]
