@@ -41,7 +41,7 @@ view: orders_analysis {
     sql: ${TABLE}.email ;;
   }
 
-# For Claims Demo 20211104
+# START: Date Set up
   dimension_group: order {
     type: time
     timeframes: [
@@ -80,12 +80,13 @@ view: orders_analysis {
     sql: ${weeks_since_order} > 0 OR ${order_week_of_year} < ${hidden_today_week_of_year};;
   }
 
-
   dimension: is_before_day_of_year {
     type: yesno
     sql: ${order_day_of_year} <= ${hidden_today_day_of_year} ;;
   }
+# END: Date Set up
 
+# START: Year over Year Sales
   measure: year_to_date_sales {
     view_label: "Year over Year Sales"
     type: sum
@@ -132,8 +133,106 @@ view: orders_analysis {
     filters: [years_since_order: "1"]
     value_format_name: usd_0
   }
-# For Claims Demo 20211104
+# END: Year over Year Sales
 
+
+# START: Year over Year Quantity
+  measure: year_to_date_quantity {
+    view_label: "Year over Year Quantity"
+    type: sum
+    sql: ${quantity} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+    drill_fields: [state, year_to_date_quantity]
+  }
+
+  measure: prior_year_to_date_quantity {
+    view_label: "Year over Year Quantity"
+    type: sum
+    sql: ${quantity} ;;
+    filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_quantity_diff {
+    view_label: "Year over Year Quantity"
+    type: number
+    sql: (${year_to_date_quantity} - ${prior_year_to_date_quantity})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_quantity_pdiff {
+    view_label: "Year over Year Quantity"
+    type: number
+    sql: (${year_to_date_quantity} - ${prior_year_to_date_quantity}) / NULLIF(${prior_year_to_date_quantity}, 0) ;;
+    value_format_name: percent_1
+  }
+
+  measure: year_to_date_quantity_complete_weeks {
+    view_label: "Year over Year Quantity"
+    type: sum
+    sql: ${quantity} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes", complete_week_flag: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: prior_year_quantity {
+    view_label: "Year over Year Quantity"
+    type: sum
+    sql: ${quantity} ;;
+    filters: [years_since_order: "1"]
+    value_format_name: usd_0
+  }
+# END: Year over Year Quantity
+
+# START: Year over Year Profit
+  measure: year_to_date_profit {
+    view_label: "Year over Year Profit"
+    type: sum
+    sql: ${profit} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+    drill_fields: [state, year_to_date_profit]
+  }
+
+  measure: prior_year_to_date_profit {
+    view_label: "Year over Year Profit"
+    type: sum
+    sql: ${profit} ;;
+    filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_profit_diff {
+    view_label: "Year over Year Profit"
+    type: number
+    sql: (${year_to_date_profit} - ${prior_year_to_date_profit})  ;;
+    value_format_name: usd_0
+  }
+
+  measure: year_over_year_profit_pdiff {
+    view_label: "Year over Year Profit"
+    type: number
+    sql: (${year_to_date_profit} - ${prior_year_to_date_profit}) / NULLIF(${prior_year_to_date_profit}, 0) ;;
+    value_format_name: percent_1
+  }
+
+  measure: year_to_date_profit_complete_weeks {
+    view_label: "Year over Year Profit"
+    type: sum
+    sql: ${profit} ;;
+    filters: [years_since_order: "0", is_before_day_of_year: "Yes", complete_week_flag: "Yes"]
+    value_format_name: usd_0
+  }
+
+  measure: prior_year_profit {
+    view_label: "Year over Year Profit"
+    type: sum
+    sql: ${profit} ;;
+    filters: [years_since_order: "1"]
+    value_format_name: usd_0
+  }
+# END: Year over Year Profit
 
   dimension: is_before_day_of_month {
     type: yesno
@@ -275,9 +374,21 @@ view: orders_analysis {
     sql: ${TABLE}.Profit ;;
   }
 
+  measure: total_profit {
+    type: sum
+    sql: ${profit} ;;
+    value_format_name: usd
+  }
+
   dimension: quantity {
     type: number
     sql: ${TABLE}.Quantity ;;
+  }
+
+  measure: total_quantity {
+    type: sum
+    sql: ${quantity} ;;
+    value_format_name: decimal_0
   }
 
   dimension: region {
@@ -293,6 +404,7 @@ view: orders_analysis {
   }
 
   dimension: row_id {
+    primary_key: yes
     type: number
     sql: ${TABLE}.Row_ID ;;
   }
