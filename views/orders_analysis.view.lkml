@@ -41,6 +41,31 @@ view: orders_analysis {
     sql: ${TABLE}.email ;;
   }
 
+  parameter: date_granularity {
+    type: string
+    allowed_value: { value: "Day" }
+    allowed_value: { value: "Week" }
+    allowed_value: { value: "Month" }
+    allowed_value: { value: "Quarter" }
+    default_value: "Week"
+  }
+
+  dimension: date {
+    label_from_parameter: date_granularity
+    sql:
+    CASE
+      WHEN {% parameter date_granularity %} = 'Day'
+        THEN FORMAT("%03d", ${order_day_of_year})
+      WHEN {% parameter date_granularity %} = 'Week'
+        THEN FORMAT("%02d", ${order_week_of_year})
+      WHEN {% parameter date_granularity %} = 'Month'
+        THEN FORMAT("%02d", ${order_month_num})
+      WHEN {% parameter date_granularity %} = 'Quarter'
+        THEN CAST(${order_quarter_of_year} AS STRING)
+      ELSE NULL
+    END ;;
+  }
+
 # START: Date Set up
   dimension_group: order {
     type: time
@@ -54,7 +79,9 @@ view: orders_analysis {
       day_of_month,
       day_of_year,
       week_of_year,
-      month_name
+      month_name,
+      quarter_of_year,
+      month_num
     ]
     convert_tz: no
     datatype: date
@@ -93,6 +120,7 @@ view: orders_analysis {
     sql: ${sales} ;;
     filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
+    # value_format: "$0.000,,\" M\""
     drill_fields: [state, year_to_date_sales]
   }
 
