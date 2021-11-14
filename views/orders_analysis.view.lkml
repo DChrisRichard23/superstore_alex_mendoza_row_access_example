@@ -22,6 +22,7 @@ view: orders_analysis {
   }
 
   dimension: customer_id {
+    label: "Customer ID"
     type: string
     sql: ${TABLE}.Customer_ID ;;
   }
