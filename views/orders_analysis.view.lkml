@@ -1,6 +1,6 @@
 view: orders_analysis {
   sql_table_name: `superstore.orders_analysis` ;;
-  drill_fields: [customer_name, total_sales]
+  drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
 
   set: user_details {
     fields: [customer_name, state, total_sales]
@@ -122,7 +122,7 @@ view: orders_analysis {
     filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
     # value_format: "$0.000,,\" M\""
-    drill_fields: [state, year_to_date_sales]
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: prior_year_to_date_sales {
@@ -131,6 +131,7 @@ view: orders_analysis {
     sql: ${sales} ;;
     filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_over_year_sales_diff {
@@ -138,6 +139,7 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_sales} - ${prior_year_to_date_sales})  ;;
     value_format_name: usd_0
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_over_year_sales_pdiff {
@@ -145,6 +147,7 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_sales} - ${prior_year_to_date_sales}) / NULLIF(${prior_year_to_date_sales}, 0) ;;
     value_format_name: percent_1
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_to_date_sales_complete_weeks {
@@ -172,7 +175,7 @@ view: orders_analysis {
     sql: ${quantity} ;;
     filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
-    drill_fields: [state, year_to_date_quantity]
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: prior_year_to_date_quantity {
@@ -181,6 +184,7 @@ view: orders_analysis {
     sql: ${quantity} ;;
     filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_over_year_quantity_diff {
@@ -188,6 +192,7 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_quantity} - ${prior_year_to_date_quantity})  ;;
     value_format_name: usd_0
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_over_year_quantity_pdiff {
@@ -195,6 +200,7 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_quantity} - ${prior_year_to_date_quantity}) / NULLIF(${prior_year_to_date_quantity}, 0) ;;
     value_format_name: percent_1
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_to_date_quantity_complete_weeks {
@@ -221,7 +227,7 @@ view: orders_analysis {
     sql: ${profit} ;;
     filters: [years_since_order: "0", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
-    drill_fields: [state, year_to_date_profit]
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: prior_year_to_date_profit {
@@ -230,6 +236,7 @@ view: orders_analysis {
     sql: ${profit} ;;
     filters: [years_since_order: "1", is_before_day_of_year: "Yes"]
     value_format_name: usd_0
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_over_year_profit_diff {
@@ -237,6 +244,7 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_profit} - ${prior_year_to_date_profit})  ;;
     value_format_name: usd_0
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_over_year_profit_pdiff {
@@ -244,6 +252,7 @@ view: orders_analysis {
     type: number
     sql: (${year_to_date_profit} - ${prior_year_to_date_profit}) / NULLIF(${prior_year_to_date_profit}, 0) ;;
     value_format_name: percent_1
+    drill_fields: [order_id, region, state, order_date, total_sales, total_profit, total_quantity]
   }
 
   measure: year_to_date_profit_complete_weeks {
