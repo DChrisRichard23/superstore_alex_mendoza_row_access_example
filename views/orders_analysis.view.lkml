@@ -424,7 +424,7 @@ view: orders_analysis {
     type: string
     sql: ${TABLE}.Region ;;
     drill_fields: [state, city]
-    html: <a href="/dashboards-next/207?Region={{ value }}">{{ value }}</a> ;;
+    html: <a href="/dashboards-next/208?Date+Granularity=Week&Region={{ value }}">{{ value }}</a> ;;
   }
 
   dimension: returned {
