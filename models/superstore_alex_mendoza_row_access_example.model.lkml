@@ -10,6 +10,11 @@ datagroup: superstore_alex_mendoza_row_access_example_default_datagroup {
 
 persist_with: superstore_alex_mendoza_row_access_example_default_datagroup
 
+access_grant: can_view_product_info {
+  user_attribute: email
+  allowed_values: [ "charlie.sanders@mavenwave.com" ]
+}
+
 explore: orders_analysis {
   # access_filter: {
   #   field: email

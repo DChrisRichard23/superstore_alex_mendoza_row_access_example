@@ -405,6 +405,7 @@ view: orders_analysis {
   dimension: product_name {
     type: string
     sql: ${TABLE}.Product_Name ;;
+    required_access_grants: [can_view_product_info]
   }
 
   dimension: profit {
